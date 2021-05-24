@@ -1,0 +1,43 @@
+# The token used to download the repos from GitHub for the pipelines
+github_token: ((github_token))
+github_repo: https://github.com/<user>/<repo> # [R] Pipelines github repo
+github_branch: master
+github_username:  # [R] Your github username
+
+# Enter vCenter details
+vcenter_host: <VCENTER-HOST-OR-IP>
+vcenter_usr: <VCENTER-SERVICE-USR> # If user is tied to a domain, then escape the \, example `domain\\user`
+vcenter_pwd: <VCENTER-SERVICE-USR-PWD>
+vcenter_data_center: <VCENTER-DATA-CENTER-TO-DEPLOY>
+vcenter_network: <NETWORK-NAME> # vCenter network name to use to deploy the appliance on
+vcenter_data_store: <DATA-STORE-TO-DEPLOY> # vCenter datastore name to deploy the appliance on
+
+# vCenter Cluster or Resource Pool to use to deploy the appliance.
+# The format is
+# - `/<Data Center Name>/host/<Cluster Name>/Resources/<Resource Pool Name>`
+# - or `/<Data Center Name>/host/<Cluster Name>`
+vcenter_resource_pool: <RESOURCE-POOL-PATH>
+
+appliance_ova_location:
+
+# update this section and you might have to update the tasks/delete-appliance/task.sh to pick the vm ip
+appliance_settings: |
+  DiskProvisioning: flat
+  IPAllocationPolicy: dhcpPolicy
+  IPProtocol: IPv4
+  PropertyMapping:
+    - Key: 
+      Value: 
+    - Key: 
+      Value: 
+    - Key: vami.ip0.IRIS_Appliance
+      Value: 10.0.0.20
+  NetworkMapping:
+    - Name: VM Network
+      Network: "VM Network"
+  Annotation: "Appliance"
+  MarkAsTemplate: false
+  PowerOn: true
+  InjectOvfEnv: false
+  WaitForIP: false
+  Name: ubuntu
