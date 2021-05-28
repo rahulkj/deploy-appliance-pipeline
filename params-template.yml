@@ -5,7 +5,7 @@ git:
   token: ((git_credentials.password))
 
 tasks_git_repo:
-  url: https://github.com/rahulkj/deploy-appliance-pipeline
+  url: https://github.com/rahulkj/deploy-appliances-pipeline
   branch: main
 
 s3:
