@@ -19,7 +19,7 @@ resources:
 - name: custom-docker-image
   type: docker-image
   source:
-    repository: rjain/buildbox
+    repository: rjain/lightweightbox
 
 #@ for appliance in data.values.appliances:
 - name: #@ appliance.name
