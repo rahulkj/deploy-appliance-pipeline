@@ -1,43 +1,83 @@
-# The token used to download the repos from GitHub for the pipelines
-github_token: ((github_token))
-github_repo: https://github.com/<user>/<repo> # [R] Pipelines github repo
-github_branch: master
-github_username:  # [R] Your github username
+#@data/values
+---
+git:
+  username: ((git_credentials.username))
+  token: ((git_credentials.password))
 
-# Enter vCenter details
-vcenter_host: <VCENTER-HOST-OR-IP>
-vcenter_usr: <VCENTER-SERVICE-USR> # If user is tied to a domain, then escape the \, example `domain\\user`
-vcenter_pwd: <VCENTER-SERVICE-USR-PWD>
-vcenter_data_center: <VCENTER-DATA-CENTER-TO-DEPLOY>
-vcenter_network: <NETWORK-NAME> # vCenter network name to use to deploy the appliance on
-vcenter_data_store: <DATA-STORE-TO-DEPLOY> # vCenter datastore name to deploy the appliance on
+tasks_git_repo:
+  url: https://github.com/rahulkj/deploy-appliance-pipeline
+  branch: main
 
-# vCenter Cluster or Resource Pool to use to deploy the appliance.
-# The format is
-# - `/<Data Center Name>/host/<Cluster Name>/Resources/<Resource Pool Name>`
-# - or `/<Data Center Name>/host/<Cluster Name>`
-vcenter_resource_pool: <RESOURCE-POOL-PATH>
+s3:
+  endpoint: http://((s3_endpoint))/
+  access_key: ((s3_credentials.username))
+  secret_key: ((s3_credentials.password))
+  disable_ssl: true
 
-appliance_ova_location:
-
-# update this section and you might have to update the tasks/delete-appliance/task.sh to pick the vm ip
-appliance_settings: |
-  DiskProvisioning: flat
-  IPAllocationPolicy: dhcpPolicy
-  IPProtocol: IPv4
-  PropertyMapping:
-    - Key: 
-      Value: 
-    - Key: 
-      Value: 
-    - Key: vami.ip0.IRIS_Appliance
-      Value: 10.0.0.20
-  NetworkMapping:
-    - Name: VM Network
-      Network: "VM Network"
-  Annotation: "Appliance"
-  MarkAsTemplate: false
-  PowerOn: true
-  InjectOvfEnv: false
-  WaitForIP: false
-  Name: ubuntu
+vcenter:
+  host: ((vcenter_host))
+  username: ((vcenter_credentials.username))
+  password: ((vcenter_credentials.password))
+  datacenter: <DATACENTER>
+  network: "VM Network"
+  
+appliances:
+- name: Appliance1
+  datastore: <STORAGE>
+  resource_pool: /<DATACENTER>/host/<CLUSTER>/Resources/<RESOURCE-POOL>
+  s3:
+    bucket: appliances
+    appliance_regex: Appliance1/Appliance1-appliance-(1.*.*).ova
+  settings: |
+    DiskProvisioning: flat
+    IPAllocationPolicy: dhcpPolicy
+    IPProtocol: IPv4
+    PropertyMapping:
+      - Key: varoot_password
+        Value: dummy
+      - Key: IRIS_NTP
+        Value: 172.16.0.22
+      ...
+      ...
+      ...
+    NetworkMapping:
+      - Name: Network
+        Network: "VM Network"
+    Annotation: "Appliance1"
+    MarkAsTemplate: false
+    PowerOn: true
+    InjectOvfEnv: false
+    WaitForIP: false
+    Name: Appliance1
+- name: Appliance2
+  datastore: <STORAGE>
+  resource_pool: /<DATACENTER>/host/<CLUSTER>/Resources/<RESOURCE-POOL>
+  s3:
+    bucket: appliances
+    appliance_regex: Appliance2/Appliance2-appliance-(1.*.*).ova
+  settings: |
+    Deployment: default
+    DiskProvisioning: flat
+    IPAllocationPolicy: dhcpPolicy
+    IPProtocol: IPv4
+    PropertyMapping:
+      - Key: appliance.root_pwd
+        Value: dummy
+      - Key: appliance.permit_root_login
+        Value: "True"
+      ...
+      ...
+      ...
+    NetworkMapping:
+      - Name: Management
+        Network: "VM Network"
+      - Name: Workload
+        Network: "VM Network"
+      - Name: Frontend
+        Network: "VM Network"
+    Annotation: HAProxy
+    MarkAsTemplate: false
+    PowerOn: true
+    InjectOvfEnv: false
+    WaitForIP: false
+    Name: Appliance2

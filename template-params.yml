@@ -1,0 +1,31 @@
+#@ load("@ytt:template", "template")
+#@ load("@ytt:data", "data")
+
+s3:
+  endpoint: #@ data.values.s3.endpoint
+  access_key: #@ data.values.s3.access_key
+  secret_key: #@ data.values.s3.secret_key
+  disable_ssl: #@ data.values.s3.disable_ssl
+
+git:
+  username: #@ data.values.git.username
+  token: #@ data.values.git.token
+
+tasks_git_repo:
+  url: #@ data.values.tasks_git_repo.url
+  branch: #@ data.values.tasks_git_repo.branch
+
+vcenter:
+  host: #@ data.values.vcenter.host
+  username: #@ data.values.vcenter.username
+  password: #@ data.values.vcenter.password
+  datacenter: #@ data.values.vcenter.datacenter
+  network: #@ data.values.vcenter.network
+
+#@ for appliance in data.values.appliances:
+_: #@ template.replace({appliance.name + "_resource_pool": appliance.resource_pool})
+_: #@ template.replace({appliance.name + "_datastore": appliance.datastore})
+_: #@ template.replace({appliance.name + "_settings": appliance.settings})
+_: #@ template.replace({appliance.name + "_s3.bucket": appliance.s3.bucket})
+_: #@ template.replace({appliance.name + "_s3.appliance_regex": appliance.s3.appliance_regex})
+#@ end

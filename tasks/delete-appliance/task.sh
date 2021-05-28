@@ -12,6 +12,8 @@ echo "$APPLIANCE_SETTINGS" > appliance-settings.yml
 
 yq eval -j -I=0 appliance-settings.yml > appliance-settings.json
 
-APPLIANCE_IP=$(cat appliance-settings.json | jq -r '.PropertyMapping[] | select(.Key=="vami.ip0.IRIS_Appliance") | .Value')
+APPLIANCE_NAME=$(cat appliance-settings.json | jq -r '.Name')
 
-$GOVC_CMD vm.destroy -vm.ip=$APPLIANCE_IP
+APPLIANCE_DNS=$($GOVC_CMD vm.info --json ${APPLIANCE_NAME} | jq -r '.VirtualMachines[] | .Guest | .HostName')
+
+$GOVC_CMD vm.destroy -vm.dns=$APPLIANCE_DNS

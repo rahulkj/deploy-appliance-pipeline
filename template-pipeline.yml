@@ -1,0 +1,97 @@
+#@ load("@ytt:data", "data")
+
+resources:
+- name: govc
+  type: github-release
+  source:
+    user: vmware
+    repository: govmomi
+    access_token: ((git.token))
+
+- name: tasks-repo
+  type: git
+  source:
+    uri: ((tasks_git_repo.url))
+    branch: ((tasks_git_repo.branch))
+    username: ((git.username))
+    password: ((git.token))
+
+- name: custom-docker-image
+  type: docker-image
+  source:
+    repository: rjain/buildbox
+
+#@ for appliance in data.values.appliances:
+- name: #@ appliance.name
+  type: s3
+  source:
+    endpoint: ((s3.endpoint))
+    access_key_id: ((s3.access_key))
+    secret_access_key: ((s3.secret_key))
+    disable_ssl: ((s3.disable_ssl))
+    bucket: #@ appliance.s3.bucket
+    regexp: #@ appliance.s3.appliance_regex
+#@ end
+
+groups:
+- name: all
+  jobs:
+  #@ for appliance in data.values.appliances:
+  - #@ "deploy_" + appliance.name
+  - #@ "delete_" + appliance.name
+  #@ end
+#@ for appliance in data.values.appliances:
+- name: #@ appliance.name
+  jobs:
+  - #@ "deploy_" + appliance.name
+  - #@ "delete_" + appliance.name
+#@ end
+
+jobs:
+#@ for appliance in data.values.appliances:
+- name: #@ "deploy_" + appliance.name
+  serial: true
+  plan:
+  - in_parallel:
+    - get: tasks-repo
+    - get: govc
+    - get: custom-docker-image
+    - get: appliance
+      resource: #@ appliance.name
+
+  - task: #@ "import_" + appliance.name
+    image: custom-docker-image  
+    file: tasks-repo/tasks/import-appliance/task.yml
+    params:
+      GOVC_INSECURE: 1
+      GOVC_URL: ((vcenter.host))
+      GOVC_USERNAME: ((vcenter.username))
+      GOVC_PASSWORD: ((vcenter.password))
+      GOVC_DATACENTER: ((vcenter.datacenter))
+      GOVC_NETWORK: ((vcenter.network))
+      GOVC_DATASTORE: #@ "((" + appliance.name + "_datastore))"
+      GOVC_RESOURCE_POOL: #@ "((" + appliance.name + "_resource_pool))"
+      APPLIANCE_SETTINGS: #@ "((" + appliance.name + "_settings))"
+
+- name: #@ "delete_" + appliance.name
+  serial: true
+  plan:
+  - in_parallel:
+    - get: tasks-repo
+    - get: govc
+    - get: custom-docker-image
+
+  - task: #@ "delete_" + appliance.name
+    image: custom-docker-image  
+    file: tasks-repo/tasks/delete-appliance/task.yml
+    params:
+      GOVC_INSECURE: 1
+      GOVC_URL: ((vcenter.host))
+      GOVC_USERNAME: ((vcenter.username))
+      GOVC_PASSWORD: ((vcenter.password))
+      GOVC_DATACENTER: ((vcenter.datacenter))
+      GOVC_NETWORK: ((vcenter.network))
+      GOVC_DATASTORE: #@ "((" + appliance.name + "_datastore))"
+      GOVC_RESOURCE_POOL: #@ "((" + appliance.name + "_resource_pool))"
+      APPLIANCE_SETTINGS: #@ "((" + appliance.name + "_settings))"
+#@ end
