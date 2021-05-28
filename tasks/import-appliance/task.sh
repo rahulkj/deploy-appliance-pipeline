@@ -6,7 +6,7 @@ chmod +x ./govc
 GOVC_CMD=$PWD/govc
 popd
 
-# FILE_PATH=`find ./product/ -name *.ova`
+APPLIANCE_OVA_LOCATION=`find ./appliance/ -name *.ova`
 
 echo "$APPLIANCE_SETTINGS" > appliance-settings.yml
 
