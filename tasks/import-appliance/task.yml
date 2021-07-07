@@ -17,6 +17,7 @@ params:
 inputs:
   - name: tasks-repo
   - name: govc
+  - name: appliance
 
 run:
   path: tasks-repo/tasks/import-appliance/task.sh
