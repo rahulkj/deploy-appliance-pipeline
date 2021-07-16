@@ -5,7 +5,7 @@ chmod +x ./mc
 
 wget ${APPLIANCE_OVA_LOCATION}
 
-./mc alias set minio http://${MINIO_TARGET} ${MINIO_USERNAME} ${MINIO_PASSWORD}
+./mc alias set minio ${MINIO_TARGET} ${MINIO_USERNAME} ${MINIO_PASSWORD}
 
 OVA_LOCATION=$(find ./ -name *.ova)
 
