@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-wget -O mc https://dl.min.io/client/mc/release/linux-amd64/mc
+wget --no-check-certificate -O mc https://dl.min.io/client/mc/release/linux-amd64/mc
 chmod +x ./mc
 
 wget ${APPLIANCE_OVA_LOCATION}
