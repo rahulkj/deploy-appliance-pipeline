@@ -1,0 +1,16 @@
+---
+
+platform: linux
+
+params:
+  MINIO_USERNAME:
+  MINIO_PASSWORD:
+  MINIO_TARGET:
+  MINIO_BUCKET:
+  APPLIANCE_OVA_LOCATION:
+
+inputs:
+  - name: tasks-repo
+
+run:
+  path: tasks-repo/tasks/download-ova-upload-minio/task.sh
