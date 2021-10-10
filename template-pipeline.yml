@@ -3,6 +3,7 @@
 resources:
 - name: govc
   type: github-release
+  icon: github
   source:
     user: vmware
     repository: govmomi
@@ -10,6 +11,7 @@ resources:
 
 - name: tasks-repo
   type: git
+  icon: github
   source:
     uri: ((tasks_git_repo.url))
     branch: ((tasks_git_repo.branch))
@@ -18,12 +20,14 @@ resources:
 
 - name: custom-docker-image
   type: docker-image
+  icon: docker
   source:
     repository: rjain/lightweightbox
 
 #@ for appliance in data.values.appliances:
 - name: #@ appliance.name
   type: s3
+  icon: database
   source:
     endpoint: ((s3.endpoint))
     access_key_id: ((s3.access_key))
