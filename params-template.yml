@@ -10,6 +10,7 @@ tasks_git_repo:
 
 s3:
   endpoint: http://((s3_endpoint))/
+  region: us-east
   access_key: ((s3_credentials.username))
   secret_key: ((s3_credentials.password))
   disable_ssl: true

@@ -3,6 +3,7 @@
 
 s3:
   endpoint: #@ data.values.s3.endpoint
+  region: #@ data.values.s3.region
   access_key: #@ data.values.s3.access_key
   secret_key: #@ data.values.s3.secret_key
   disable_ssl: #@ data.values.s3.disable_ssl
